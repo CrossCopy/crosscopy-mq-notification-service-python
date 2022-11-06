@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up Verification</title>
+    <style>
+      body {
+        text-align: center
+      }
+      .hide {
+          display: none
+      }
+    </style>
+  </head>
+  <body>
+    <h1>CrossCopy {{event}}</h1>
+    <p>Your verification code is <strong>{{code}}</strong></p>
+    <p>Please enter the verification code within {{ expireDuration }} minutes</p>
+    <p>Expiry Time: {{ expTimeIso }}</p>
+    <p>Otherwise you will need to sign up again</p>
+    <p id="countdown-paragraph" class="hide"><strong>Countdown:</strong> <span id="countdown"></span></p>
+    <div id="expired-msg" class="hide">
+        <h3>Expired</h3>
+        <p>Please Sign Up Again and verify your email within {{ expireDuration }} minutes.</p>
+    </div>
+  </body>
+  <script>
+    const expTime = new Date({{expTimeIso}});
+    document.getElementById("countdown-paragraph").classList.remove("hide");
+    
+    const getDiffDate = (diffMs) => {
+        const diffDays = Math.floor(diffMs / 86400000);
+        const diffHrs = Math.floor((diffMs % 86400000) / 3600000);
+        const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
+        const diffSecs = Math.round(((diffMs % 86400000) % 3600000 % 60000 / 1000));
+        return {
+            diffDays,
+            diffHrs,
+            diffMins,
+            diffSecs
+        }
+    }
+
+    const getDiffMsg = (diff) => {
+        let msg = ""
+        if (diff.diffDays) msg += `${diff.diffDays} days, `
+        if (diff.diffHrs) msg += `${diff.diffHrs} hours, `
+        if (diff.diffMins) msg += `${diff.diffMins} minutes, `
+        if (diff.diffSecs) msg += `${diff.diffSecs} seconds`
+        return msg
+    }
+
+    const updateCountdown = () => {
+        const countdown = document.getElementById("countdown");
+        const now = new Date();
+        const diff = getDiffDate(expTime - now);
+        const expired = expTime < now;
+        if (expired) {
+            console.log(expired);
+            document.getElementById("countdown-paragraph").classList.add('hide');
+            document.getElementById("expired-msg").classList.remove('hide');
+        } else {
+            countdown.textContent = getDiffMsg(diff);
+        }
+    }
+    updateCountdown();
+    setInterval(() => {
+        updateCountdown();
+    }, 1000);
+  </script>
+</html>

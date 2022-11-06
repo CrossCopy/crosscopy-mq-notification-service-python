@@ -1,0 +1,2 @@
+SIGNUP="signup"
+TOPICS = [SIGNUP]
